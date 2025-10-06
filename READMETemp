@@ -1,0 +1,19 @@
+Proyecto con Hexagonal con enfoque en (HEXAGONAL Original - Alistair Cockburn) --> Domain define lo que necesita,
+NO ROMPE DIP  DIP claro y respetado, Infrastructure maneja conversiones
+Conversiones en lugar correcto (Infrastructure)
+Domain define necesidades
+"Application coordina todo"
+Application solo coordina
+
+
+Otro enfoque --> (Clean Architecture - Uncle Bob) -->
+Domain puro, sin dependencias
+"Application coordina todo"
+NO define puertos (esa es la diferencia)
+LA CAPA DE APLICACION DEFINE LOS PUERTOS
+INFRA CONVIERTE, APPLICATION NO CONVIERTE NADA
+
+DIP ambiguo
+Conversiones en lugar incierto
+Puede romper DIP fácilmente
+PARA EVITAR ROMPER DIP TOCARIA CONVERTIR EN INFRA

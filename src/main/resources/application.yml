@@ -1,3 +1,131 @@
 spring:
   application:
     name: resilience-patterns-poc
+
+  # Feign Configuration
+  cloud:
+    openfeign:
+      client:
+        config:
+          # Configuración global para TODOS los clientes
+          default:
+            connect-timeout: 5000
+            read-timeout: 10000
+            logger-level: basic
+
+          # Configuración específica para external-api
+          external-api:
+            connect-timeout: 5000
+            read-timeout: 10000
+            logger-level: full
+
+
+  # Cache con Redis (opcional, puedes usar in-memory)
+  cache:
+    type: simple # Cambiar a 'redis' si tienes Redis
+    cache-names: external-api-cache
+
+# ============================================
+# RESILIENCE4J - CONFIGURACIÓN
+# ============================================
+resilience4j:
+  # RATE LIMITER - Control de velocidad (20/minuto con espera)
+  ratelimiter:
+    instances:
+      external-api:
+        limit-for-period: 20                # 20 peticiones
+        limit-refresh-period: 60s           # por minuto
+        timeout-duration: 30s               # ESPERA hasta 30s por slot
+        register-health-indicator: true
+
+  # CIRCUIT BREAKER - "Interruptor Inteligente"
+  circuitbreaker:
+    instances:
+      external-api:
+        # Configuración del estado CLOSED -> OPEN
+        failure-rate-threshold: 50          # 50% de fallos para abrir
+        minimum-number-of-calls: 5          # Mínimo 5 llamadas para evaluar
+        sliding-window-size: 10             # Ventana de 10 llamadas
+        sliding-window-type: count_based    # Basado en cantidad, no tiempo
+
+        # Configuración del estado OPEN -> HALF_OPEN
+        wait-duration-in-open-state: 30s                  # Esperar 30s antes de probar
+        permitted-number-of-calls-in-half-open-state: 3   # 3 pruebas para cerrar
+
+        # Otras opciones a considerar
+        # Configuración del estado HALF_OPEN -> CLOSED
+        slow-call-rate-threshold: 100       # 100% de llamadas lentas
+        slow-call-duration-threshold: 5s    # Llamada lenta > 5s
+
+        # Excepciones que NO abren el circuit
+        ignore-exceptions:
+          - java.lang.IllegalArgumentException
+
+        # Métricas y eventos
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+
+    # RETRY - "Reintentos para fallos transitorios"
+    retry:
+      instances:
+        external-api:
+          max-attempts: 3                     # Máximo 3 intentos
+          wait-duration: 1s                   # Esperar 1s entre intentos
+          exponential-backoff-multiplier: 2   # Backoff exponencial
+          retry-exceptions:                   # Solo reintentar estas excepciones
+            - java.net.ConnectException
+            - java.net.SocketTimeoutException
+            - feign.RetryableException
+            - feign.FeignException.InternalServerError
+            - feign.FeignException.BadGateway
+            - feign.FeignException.ServiceUnavailable
+          ignore-exceptions:                  # NO reintentar estas
+            - java.lang.IllegalArgumentException
+
+# ============================================
+# CONFIGURACIÓN DE API EXTERNA (MOCK)
+# ============================================
+external-api:
+  base-url: http://localhost:8081
+  endpoints:
+    users: /api/users
+    orders: /api/orders
+
+
+# ============================================
+# LOGGING PARA DEBUG
+# ============================================
+logging:
+  level:
+    com.resiliencepatterns.poc: INFO
+    io.github.resilience4j: WARN
+    feign: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"
+
+
+
+
+
+
+
+
+
+
+
+# ============================================
+# ACTUATOR - MONITOREO Y MÉTRICAS
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,circuitbreakers,ratelimiters,retries
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true

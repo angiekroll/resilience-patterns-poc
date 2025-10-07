@@ -5,6 +5,7 @@ package com.resiliencepatterns.poc.application.usecases;
 
 import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
+import com.resiliencepatterns.poc.domain.exceptions.UserRegistrationException;
 import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.domain.model.UserEmail;
 import com.resiliencepatterns.poc.domain.model.UserId;
@@ -33,28 +34,25 @@ public class RegisterUserUseCase implements RegisterUserUseCasePort {
   }
 
   @Override
-  public UserRegistrationResponse registerUser(RegisterUserCommand messageDto) {
-    log.info("Processing user message: {}", messageDto.userId());
+  public UserRegistrationResponse registerUser(RegisterUserCommand registerUserCommand) {
+    log.info("[API:Validation] Validating user: {} ", registerUserCommand.userId());
 
     try {
-      // 1. Crear entidad de dominio
-      User user = createUserFromDto(messageDto);
+      User user = createUserFromDto(registerUserCommand);
 
-      // 2. Aplicar reglas de negocio
       if (!user.isValidForProcessing()) {
         throw new IllegalArgumentException("User data is invalid for processing");
       }
-
       user = user.register();
 
       User registeredUser = userRegistrationPort.registerUser(user);
-      log.info("User processed successfully: {}", registeredUser.getId().value());
+      log.info("[API:Response] User registered successfully: {}", registeredUser.getId().value());
 
       return UserRegistrationResponse.success(registeredUser.getId().value(), "User processed successfully");
 
-    } catch (Exception e) {
-      log.error("Error processing user message: {}", e.getMessage());
-      throw new RuntimeException("Failed to process user message", e);
+    } catch (IllegalArgumentException | NullPointerException e) {
+      log.error("Domain validation error for user: {}", e.getMessage());
+      throw new UserRegistrationException("Invalid user data", e);
     }
   }
 

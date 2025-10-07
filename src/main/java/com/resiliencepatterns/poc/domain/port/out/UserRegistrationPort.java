@@ -4,7 +4,6 @@
 package com.resiliencepatterns.poc.domain.port.out;
 
 import com.resiliencepatterns.poc.domain.model.User;
-import com.resiliencepatterns.poc.domain.model.UserId;
 
 /**
  *
@@ -15,7 +14,5 @@ import com.resiliencepatterns.poc.domain.model.UserId;
 public interface UserRegistrationPort {
 
   User registerUser(User user);
-
-  User getUserById(UserId userId);
 
 }

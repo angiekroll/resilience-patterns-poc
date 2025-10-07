@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13.7-management
+    container_name: resilience-poc-rabbitmq-dev
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+
+  redis:
+    image: redis:7-alpine
+    container_name: resilience-poc-redis-dev
+    restart: always
+    ports:
+      - "6379:6379"
+
+
+volumes:
+  rabbitmq_data:
+  rabbitmq_log:

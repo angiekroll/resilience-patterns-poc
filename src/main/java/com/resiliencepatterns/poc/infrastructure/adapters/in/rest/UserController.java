@@ -3,16 +3,16 @@
  */
 package com.resiliencepatterns.poc.infrastructure.adapters.in.rest;
 
-import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
+import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.domain.port.in.RegisterUserUseCasePort;
 import com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto.ApiResponseDto;
 import com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto.UserRegistrationRequest;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
  * @version - 1.0.0
  * @since - 1.0.0
  */
+
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/users")
-@CrossOrigin(origins = "*")
+@Validated
 public class UserController {
-
-  private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
   private final RegisterUserUseCasePort registerUserUseCasePort;
 
@@ -38,31 +38,20 @@ public class UserController {
   }
 
 
-  @PostMapping("/process")
+  @PostMapping()
   public ResponseEntity<ApiResponseDto<UserRegistrationResponse>> registerUser(
       @Valid @RequestBody UserRegistrationRequest request) {
-    log.info("REST request to process user: {}", request.userId());
+    log.info("[API:Request] Request received: {}", request.userId());
 
-    try {
-      RegisterUserCommand messageDto = RegisterUserCommand.create(request.userId(), request.name(),
-          request.email());
+    RegisterUserCommand command = RegisterUserCommand.create(request.userId(), request.name(),
+        request.email());
 
-      UserRegistrationResponse result = registerUserUseCasePort.registerUser(messageDto);
+    UserRegistrationResponse result = registerUserUseCasePort.registerUser(command);
 
-      log.info("REST processing successful for user, via REST: {}", request.userId());
-      return ResponseEntity.ok(ApiResponseDto.success(result));
-
-    } catch (Exception e) {
-      log.error("REST processing failed for user {}: {}", request.userId(), e.getMessage());
-
-      UserRegistrationResponse errorResult = UserRegistrationResponse.failure(
-          request.userId(),
-          "Processing failed: " + e.getMessage()
-      );
-
-      return ResponseEntity.status(503) // Service Unavailable
-          .body(ApiResponseDto.error(errorResult, "Processing failed: " + e.getMessage()));
-    }
+    log.info("[API:Response] User created successfully: {}", request.userId());
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(ApiResponseDto.success(result));
   }
 
 }

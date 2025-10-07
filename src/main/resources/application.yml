@@ -2,7 +2,6 @@ spring:
   application:
     name: resilience-patterns-poc
 
-  # Feign Configuration
   cloud:
     openfeign:
       client:
@@ -20,31 +19,39 @@ spring:
             logger-level: full
 
 
-  # Cache con Redis (opcional, puedes usar in-memory)
+  rabbitmq:
+    host: localhost
+    port: 5672
+    ssl:
+      enabled: false
+    username: admin
+    password: admin
+    virtual-host: /
+    connection-timeout: 10s
+
+
   cache:
-    type: simple # Cambiar a 'redis' si tienes Redis
+    type: simple  # Cache en memoria (no Redis)
     cache-names: external-api-cache
 
 # ============================================
 # RESILIENCE4J - CONFIGURACIÓN
 # ============================================
 resilience4j:
-  # RATE LIMITER - Control de velocidad (20/minuto con espera)
   ratelimiter:
     instances:
       external-api:
-        limit-for-period: 20                # 20 peticiones
+        limit-for-period: 20                # 20 peticiones # Más permisivo para async 100
         limit-refresh-period: 60s           # por minuto
-        timeout-duration: 30s               # ESPERA hasta 30s por slot
+        timeout-duration: 30s               # Espera hasta 30s por slot
         register-health-indicator: true
 
-  # CIRCUIT BREAKER - "Interruptor Inteligente"
   circuitbreaker:
     instances:
       external-api:
         # Configuración del estado CLOSED -> OPEN
-        failure-rate-threshold: 50          # 50% de fallos para abrir
-        minimum-number-of-calls: 5          # Mínimo 5 llamadas para evaluar
+        failure-rate-threshold: 50          # 50% de fallos para abrir  # Más sensible para proteger sistema async 30
+        minimum-number-of-calls: 5          # Mínimo 5 llamadas para evaluar  # Menos llamadas para evaluar en async 3
         sliding-window-size: 10             # Ventana de 10 llamadas
         sliding-window-type: count_based    # Basado en cantidad, no tiempo
 
@@ -65,25 +72,22 @@ resilience4j:
         register-health-indicator: true
         event-consumer-buffer-size: 10
 
-    # RETRY - "Reintentos para fallos transitorios"
-    retry:
-      instances:
-        external-api:
-          max-attempts: 3                     # Máximo 3 intentos
-          wait-duration: 1s                   # Esperar 1s entre intentos
-          exponential-backoff-multiplier: 2   # Backoff exponencial
-          retry-exceptions:                   # Solo reintentar estas excepciones
-            - java.net.ConnectException
-            - java.net.SocketTimeoutException
-            - feign.RetryableException
-            - feign.FeignException.InternalServerError
-            - feign.FeignException.BadGateway
-            - feign.FeignException.ServiceUnavailable
-          ignore-exceptions:                  # NO reintentar estas
-            - java.lang.IllegalArgumentException
+  retry:
+    instances:
+      external-api:
+        max-attempts: 3                     # Máximo 3 intentos
+        wait-duration: 1s                   # Esperar 1s entre intentos
+        exponential-backoff-multiplier: 2   # Backoff exponencial
+        retry-exceptions:                   # Solo reintentar estas excepciones
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException
+          - feign.FeignException            # TEMPORAL POR PRUEBASS
+        ignore-exceptions:                  # NO reintentar estas
+          - java.lang.IllegalArgumentException
+
 
 # ============================================
-# CONFIGURACIÓN DE API EXTERNA (MOCK)
+# API EXTERNAL (MOCK) - CONFIGURATION
 # ============================================
 external-api:
   base-url: http://localhost:8081
@@ -98,19 +102,16 @@ external-api:
 logging:
   level:
     com.resiliencepatterns.poc: INFO
+
     io.github.resilience4j: WARN
+    io.github.resilience4j.retry: DEBUG
+    io.github.resilience4j.circuitbreaker: INFO
+    io.github.resilience4j.ratelimiter: INFO
+    org.springframework.aop: WARN
+    org.springframework.boot.autoconfigure.aop: WARN
+
     feign: INFO
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"
-
-
-
-
-
-
-
-
-
+    org.springframework.retry: INFO
 
 
 # ============================================
@@ -129,3 +130,5 @@ management:
       enabled: true
     ratelimiters:
       enabled: true
+    redis:
+      enabled: false

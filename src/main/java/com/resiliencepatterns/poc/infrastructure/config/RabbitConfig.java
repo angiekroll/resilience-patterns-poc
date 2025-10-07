@@ -29,8 +29,8 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
   @Bean
-  public Queue userProcessingQueue() {
-    return QueueBuilder.durable("user.processing.queue")
+  public Queue userRegistrationQueue() {
+    return QueueBuilder.durable("user.registration.queue")
         .withArgument("x-dead-letter-exchange", "user.dlx")
         .withArgument("x-dead-letter-routing-key", "user.failed")
         .build();
@@ -52,9 +52,9 @@ public class RabbitConfig {
   }
 
   @Bean
-  public Binding userProcessingBinding() {
+  public Binding userRegistrationBinding() {
     return BindingBuilder
-        .bind(userProcessingQueue())
+        .bind(userRegistrationQueue())
         .to(userExchange())
         .with("user.processing");
   }

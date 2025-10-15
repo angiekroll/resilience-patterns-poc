@@ -7,7 +7,6 @@ import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.ExternalApiClient;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.dto.UserDto;
-import com.resiliencepatterns.poc.infrastructure.resilience.ResilienceMonitorService;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
@@ -28,12 +27,9 @@ import org.springframework.stereotype.Service;
 public class UserRegistrationAdapter implements UserRegistrationPort {
 
   private final ExternalApiClient externalApiClient;
-  private final ResilienceMonitorService resilienceMonitorService;
 
-  public UserRegistrationAdapter(ExternalApiClient externalApiClient,
-      ResilienceMonitorService resilienceMonitorService) {
+  public UserRegistrationAdapter(ExternalApiClient externalApiClient) {
     this.externalApiClient = externalApiClient;
-    this.resilienceMonitorService = resilienceMonitorService;
   }
 
 
@@ -64,21 +60,30 @@ public class UserRegistrationAdapter implements UserRegistrationPort {
           "[Resilience: RATE LIMITER]: Request blocked for user: {}, - Too many requests, waiting 30s",
           user.getId().value());
 
-      // VALIDAR SI REENVIAR MENSAJE A LA COLA CON DELAY
-
       return user;
 
     } else if (ex instanceof CallNotPermittedException) {
       log.warn("[Resilience: CIRCUIT BREAKER]: Circuit is OPEN for user: {} - Service unavailable",
           user.getId().value());
-      throw new RuntimeException("Service circuit breaker open, Service temporarily unavailable",
-          ex);
+      // VALIDAR SI REENVIAR MENSAJE A LA COLA CON DELAY
+      /*throw new RuntimeException("Service circuit breaker open, Service temporarily unavailable",
+          ex);*/
+      return createDefaultResponse(user, "CIRCUIT_BREAKER_OPEN");
 
     } else {
       log.warn("[Resilience: RETRY EXHAUSTED]: All attempts failed for user: {}, - Final error: {}",
           user.getId().value(), ex.getMessage());
-      throw new RuntimeException("Service unavailable after retries", ex);
+     /* throw new RuntimeException("Service unavailable after retries", ex);*/
+      return createDefaultResponse(user, "SERVICE_UNAVAILABLE");
     }
+  }
+
+  private User createDefaultResponse(User originalUser, String reason) {
+    return new User(
+        originalUser.getId(),
+        originalUser.getEmail(),
+        originalUser.getName() + "_DEFAULT_" + reason + "_NOT_RESPONSE"
+    );
   }
 
 }

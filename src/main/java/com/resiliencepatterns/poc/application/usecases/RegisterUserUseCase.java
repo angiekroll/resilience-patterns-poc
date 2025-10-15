@@ -46,7 +46,7 @@ public class RegisterUserUseCase implements RegisterUserUseCasePort {
 
       User registeredUser = userRegistrationPort.registerUser(user);
 
-      return UserRegistrationResponse.success(registeredUser.getId().value(), "User processed successfully");
+      return UserRegistrationResponse.success(registeredUser, "User processed successfully");
 
     } catch (IllegalArgumentException | NullPointerException e) {
       log.error("Domain validation error for user: {}", e.getMessage());

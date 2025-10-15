@@ -1,0 +1,19 @@
+{
+  "priority": 2,
+  "scenarioName": "alternating-responses",
+  "requiredScenarioState": "Error",
+  "newScenarioState": "Started",
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/users"
+  },
+  "response": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": "Internal Server Error"
+    }
+  }
+}

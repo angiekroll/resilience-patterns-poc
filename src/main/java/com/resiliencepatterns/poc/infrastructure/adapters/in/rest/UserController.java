@@ -48,7 +48,6 @@ public class UserController {
 
     UserRegistrationResponse result = registerUserUseCasePort.registerUser(command);
 
-    log.info("[API:Response] User created successfully: {}", request.userId());
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(ApiResponseDto.success(result));

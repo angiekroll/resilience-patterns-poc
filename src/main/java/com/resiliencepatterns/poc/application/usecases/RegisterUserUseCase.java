@@ -11,6 +11,7 @@ import com.resiliencepatterns.poc.domain.model.UserEmail;
 import com.resiliencepatterns.poc.domain.model.UserId;
 import com.resiliencepatterns.poc.domain.port.in.RegisterUserUseCasePort;
 import com.resiliencepatterns.poc.domain.port.out.UserRegistrationPort;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,8 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@Slf4j
 public class RegisterUserUseCase implements RegisterUserUseCasePort {
-
-  private static final Logger log = LoggerFactory.getLogger(RegisterUserUseCase.class);
 
   private final UserRegistrationPort userRegistrationPort;
 
@@ -41,12 +41,12 @@ public class RegisterUserUseCase implements RegisterUserUseCasePort {
       User user = createUserFromDto(registerUserCommand);
 
       if (!user.isValidForProcessing()) {
+        log.error("Domain error validating user: {} ", registerUserCommand.userId());
         throw new IllegalArgumentException("User data is invalid for processing");
       }
       user = user.register();
 
       User registeredUser = userRegistrationPort.registerUser(user);
-      log.info("[API:Response] User registered successfully: {}", registeredUser.getId().value());
 
       return UserRegistrationResponse.success(registeredUser.getId().value(), "User processed successfully");
 

@@ -43,30 +43,32 @@ resilience4j:
       external-api:
         limit-for-period: 20                # 20 peticiones # Más permisivo para async 100
         limit-refresh-period: 60s           # por minuto
-        timeout-duration: 30s               # Espera hasta 30s por slot
+        timeout-duration: 30s               # Espera hasta 120s por slot,
         register-health-indicator: true
 
   circuitbreaker:
     instances:
       external-api:
         # Configuración del estado CLOSED -> OPEN
+        minimum-number-of-calls: 5          # Mínimo 5 llamadas para comenzar a evaluar | Menos llamadas para evaluar en async 3
         failure-rate-threshold: 50          # 50% de fallos para abrir  # Más sensible para proteger sistema async 30
-        minimum-number-of-calls: 5          # Mínimo 5 llamadas para evaluar  # Menos llamadas para evaluar en async 3
         sliding-window-size: 10             # Ventana de 10 llamadas
-        sliding-window-type: count_based    # Basado en cantidad, no tiempo
+        sliding-window-type: count_based    # Basado en cantidad, no tiempo. | en tiempo es time_based
 
         # Configuración del estado OPEN -> HALF_OPEN
         wait-duration-in-open-state: 30s                  # Esperar 30s antes de probar
-        permitted-number-of-calls-in-half-open-state: 3   # 3 pruebas para cerrar
+        permitted-number-of-calls-in-half-open-state: 3   # 3 pruebas para cerrar puede ser 3 o incluso antes si cumple con el umbral
+        # minimum-number-of-calls-in-half-open-state: 3
 
-        # Otras opciones a considerar
+        # Otras opciones a considerar para lentitud del servicio externo
         # Configuración del estado HALF_OPEN -> CLOSED
         slow-call-rate-threshold: 100       # 100% de llamadas lentas
         slow-call-duration-threshold: 5s    # Llamada lenta > 5s
 
         # Excepciones que NO abren el circuit
         ignore-exceptions:
-          - java.lang.IllegalArgumentException
+          - io.github.resilience4j.ratelimiter.RequestNotPermitted
+#          - java.lang.IllegalArgumentException
 
         # Métricas y eventos
         register-health-indicator: true
@@ -78,22 +80,22 @@ resilience4j:
         max-attempts: 3                     # Máximo 3 intentos
         wait-duration: 1s                   # Esperar 1s entre intentos
         exponential-backoff-multiplier: 2   # Backoff exponencial
-        retry-exceptions:                   # Solo reintentar estas excepciones
-          - java.net.ConnectException
-          - java.net.SocketTimeoutException
-          - feign.FeignException            # TEMPORAL POR PRUEBASS
+#        retry-exceptions:                   # Solo reintentar estas excepciones
+#          - java.net.ConnectException       # API caída
+#          - java.net.SocketTimeoutException # API no responde
+#          - feign.FeignException            # TEMPORAL POR PRUEBASS
         ignore-exceptions:                  # NO reintentar estas
-          - java.lang.IllegalArgumentException
+          - io.github.resilience4j.ratelimiter.RequestNotPermitted
+#          - java.lang.IllegalArgumentException
 
 
 # ============================================
 # API EXTERNAL (MOCK) - CONFIGURATION
 # ============================================
 external-api:
-  base-url: http://localhost:8081
+  base-url: http://localhost:8082
   endpoints:
     users: /api/users
-    orders: /api/orders
 
 
 # ============================================
@@ -101,12 +103,14 @@ external-api:
 # ============================================
 logging:
   level:
+    root: INFO
     com.resiliencepatterns.poc: INFO
+    com.resiliencepatterns.poc.infrastructure.resilience: DEBUG
 
     io.github.resilience4j: WARN
-    io.github.resilience4j.retry: DEBUG
-    io.github.resilience4j.circuitbreaker: INFO
-    io.github.resilience4j.ratelimiter: INFO
+    io.github.resilience4j.retry: WARN
+    io.github.resilience4j.circuitbreaker: WARN
+    io.github.resilience4j.ratelimiter: WARN
     org.springframework.aop: WARN
     org.springframework.boot.autoconfigure.aop: WARN
 

@@ -22,6 +22,17 @@ services:
     ports:
       - "6379:6379"
 
+  wiremock:
+    image: wiremock/wiremock:3.3.1
+    container_name: resilience-poc-wiremock-dev
+    restart: always
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./testing/wiremock/mappings:/home/wiremock/mappings
+      - ./testing/wiremock/__files:/home/wiremock/__files
+    command: --verbose --global-response-templating
+
 
 volumes:
   rabbitmq_data:

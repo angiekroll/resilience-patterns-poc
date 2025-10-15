@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### JMeter ###
+jmeter.log
+*.jtl
+jmeter-results/
+
+### Application Logs ###
+logs/
+*.log

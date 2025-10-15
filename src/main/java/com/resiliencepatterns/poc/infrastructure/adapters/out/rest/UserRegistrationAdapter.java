@@ -7,13 +7,13 @@ import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.domain.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.ExternalApiClient;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.dto.UserDto;
+import com.resiliencepatterns.poc.infrastructure.resilience.ResilienceMonitorService;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,14 +24,16 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@Slf4j
 public class UserRegistrationAdapter implements UserRegistrationPort {
 
-  private static final Logger log = LoggerFactory.getLogger(UserRegistrationAdapter.class);
-
   private final ExternalApiClient externalApiClient;
+  private final ResilienceMonitorService resilienceMonitorService;
 
-  public UserRegistrationAdapter(ExternalApiClient externalApiClient) {
+  public UserRegistrationAdapter(ExternalApiClient externalApiClient,
+      ResilienceMonitorService resilienceMonitorService) {
     this.externalApiClient = externalApiClient;
+    this.resilienceMonitorService = resilienceMonitorService;
   }
 
 
@@ -45,7 +47,8 @@ public class UserRegistrationAdapter implements UserRegistrationPort {
 
     UserDto userDto = UserDto.fromDomain(user);
     UserDto result = externalApiClient.createUser(userDto);
-    log.info("[API:Execution] User created successfully in external API: {}", result.id());
+    log.info("[API:Response] User registered successfully in external API: {}, and Mock: {}",
+        user.getId().value(), result.id());
     return result.toDomain();
   }
 
@@ -60,6 +63,9 @@ public class UserRegistrationAdapter implements UserRegistrationPort {
       log.warn(
           "[Resilience: RATE LIMITER]: Request blocked for user: {}, - Too many requests, waiting 30s",
           user.getId().value());
+
+      // VALIDAR SI REENVIAR MENSAJE A LA COLA CON DELAY
+
       return user;
 
     } else if (ex instanceof CallNotPermittedException) {

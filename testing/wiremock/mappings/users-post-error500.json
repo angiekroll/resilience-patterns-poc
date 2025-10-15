@@ -1,0 +1,16 @@
+{
+  "priority": 3,
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/users"
+  },
+  "response": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": "Internal Server Error"
+    }
+  }
+}

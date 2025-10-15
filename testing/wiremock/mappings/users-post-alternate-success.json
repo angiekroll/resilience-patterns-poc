@@ -1,0 +1,17 @@
+{
+  "priority": 2,
+  "scenarioName": "alternating-responses",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "Error",
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/users"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "users/success-response.json"
+  }
+}

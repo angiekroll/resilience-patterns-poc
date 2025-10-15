@@ -5,7 +5,7 @@ package com.resiliencepatterns.poc.infrastructure.adapters.in.rest;
 
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
 import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
-import com.resiliencepatterns.poc.domain.port.in.RegisterUserUseCasePort;
+import com.resiliencepatterns.poc.application.port.in.RegisterUserUseCasePort;
 import com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto.ApiResponseDto;
 import com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto.UserRegistrationRequest;
 import jakarta.validation.Valid;

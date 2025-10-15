@@ -1,6 +1,13 @@
 spring:
   application:
     name: resilience-patterns-poc
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
 
   cloud:
     openfeign:
@@ -33,6 +40,9 @@ spring:
   cache:
     type: simple  # Cache en memoria (no Redis)
     cache-names: external-api-cache
+
+server:
+  port: 8080
 
 # ============================================
 # RESILIENCE4J - CONFIGURACIÓN
@@ -99,24 +109,11 @@ external-api:
 
 
 # ============================================
-# LOGGING PARA DEBUG
+# LOGGING
 # ============================================
 logging:
   level:
     root: INFO
-    com.resiliencepatterns.poc: INFO
-    com.resiliencepatterns.poc.infrastructure.resilience: DEBUG
-
-    io.github.resilience4j: WARN
-    io.github.resilience4j.retry: WARN
-    io.github.resilience4j.circuitbreaker: WARN
-    io.github.resilience4j.ratelimiter: WARN
-    org.springframework.aop: WARN
-    org.springframework.boot.autoconfigure.aop: WARN
-
-    feign: INFO
-    org.springframework.retry: INFO
-
 
 # ============================================
 # ACTUATOR - MONITOREO Y MÉTRICAS
@@ -128,7 +125,7 @@ management:
         include: health,metrics,circuitbreakers,ratelimiters,retries
   endpoint:
     health:
-      show-details: always
+      show-details: never
   health:
     circuitbreakers:
       enabled: true

@@ -5,15 +5,13 @@ package com.resiliencepatterns.poc.application.usecases;
 
 import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
+import com.resiliencepatterns.poc.application.port.in.RegisterUserUseCasePort;
+import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.domain.exceptions.UserRegistrationException;
 import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.domain.model.UserEmail;
 import com.resiliencepatterns.poc.domain.model.UserId;
-import com.resiliencepatterns.poc.domain.port.in.RegisterUserUseCasePort;
-import com.resiliencepatterns.poc.domain.port.out.UserRegistrationPort;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**

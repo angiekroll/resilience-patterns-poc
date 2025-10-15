@@ -5,7 +5,7 @@ package com.resiliencepatterns.poc.infrastructure.adapters.in.messaging;
 
 import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
-import com.resiliencepatterns.poc.domain.port.in.RegisterUserUseCasePort;
+import com.resiliencepatterns.poc.application.port.in.RegisterUserUseCasePort;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -55,7 +55,7 @@ public class ResilienceMonitorService {
     retryRegistry.retry("external-api")
         .getEventPublisher()
         .onRetry(event ->
-            log.warn("🔥 [RETRY] Intento {} - Exception: {}",
+            log.warn("🔄 [RETRY] Intento {} - Exception: {}",
                 event.getNumberOfRetryAttempts(),
                 event.getLastThrowable().getClass().getSimpleName()));
   }
@@ -65,16 +65,16 @@ public class ResilienceMonitorService {
 
     rateLimiter.getEventPublisher()
         .onFailure(event ->
-            log.warn("⚠️ [RATE LIMITER] Permission denied - Limit reached"));
+            log.warn("🚦⚠️ [RATE LIMITER] Permission denied - Limit reached"));
 
     rateLimiter.getEventPublisher()
         .onSuccess(event ->
-            log.debug("✅ [RATE LIMITER] Permission granted - Slot available"));
+            log.debug("🚦✅ [RATE LIMITER] Permission granted - Slot available"));
 
     rateLimiter.getEventPublisher()
         .onEvent(event -> {
           if (event.getEventType().toString().equals("FAILED_ACQUIRE")) {
-            log.warn("⏳ [RATE LIMITER] Request waiting for available slot...");
+            log.warn("🚦⏳ [RATE LIMITER] Request waiting for available slot...");
           }
         });
   }

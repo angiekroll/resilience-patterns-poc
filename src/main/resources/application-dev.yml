@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# ============================================
+# LOGGING
+# ============================================
+logging:
+  level:
+    com.resiliencepatterns.poc: DEBUG
+    com.resiliencepatterns.poc.infrastructure.resilience: DEBUG
+
+    io.github.resilience4j: WARN
+    io.github.resilience4j.retry: WARN
+    io.github.resilience4j.circuitbreaker: WARN
+    io.github.resilience4j.ratelimiter: WARN
+    org.springframework.aop: WARN
+    org.springframework.boot.autoconfigure.aop: WARN
+
+    feign: DEBUG
+    org.springframework.retry: INFO
+
+
+# ============================================
+# ACTUATOR - MONITOREO Y MÉTRICAS
+# ============================================
+management:
+  endpoint:
+    health:
+      show-details: always

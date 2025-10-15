@@ -1,7 +1,7 @@
 /**
  * Copyright 2025. All rights reserved Date: 3/10/25
  */
-package com.resiliencepatterns.poc.domain.port.in;
+package com.resiliencepatterns.poc.application.port.in;
 
 import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;

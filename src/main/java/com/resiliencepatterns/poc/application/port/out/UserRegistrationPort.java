@@ -1,7 +1,7 @@
 /**
  * Copyright 2025. All rights reserved Date: 3/10/25
  */
-package com.resiliencepatterns.poc.domain.port.out;
+package com.resiliencepatterns.poc.application.port.out;
 
 import com.resiliencepatterns.poc.domain.model.User;
 

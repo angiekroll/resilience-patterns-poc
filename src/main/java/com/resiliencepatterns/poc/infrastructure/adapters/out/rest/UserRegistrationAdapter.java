@@ -3,8 +3,8 @@
  */
 package com.resiliencepatterns.poc.infrastructure.adapters.out.rest;
 
+import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.domain.model.User;
-import com.resiliencepatterns.poc.domain.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.ExternalApiClient;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.dto.UserDto;
 import com.resiliencepatterns.poc.infrastructure.resilience.ResilienceMonitorService;

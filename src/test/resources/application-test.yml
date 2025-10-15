@@ -1,9 +1,54 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+
+# ============================================
+# RESILIENCE4J - CONFIGURACIÓN
+# ============================================
 resilience4j:
   circuitbreaker:
     instances:
       external-api:
-        minimum-number-of-calls: 3
+        minimum-number-of-calls: 2
         failure-rate-threshold: 50
-        sliding-window-size: 5
-        wait-duration-in-open-state: 1s
-        permitted-number-of-calls-in-half-open-state: 2
+        sliding-window-size: 3
+        wait-duration-in-open-state: 100ms
+        permitted-number-of-calls-in-half-open-state: 1
+
+
+# ============================================
+# API EXTERNAL (MOCK) - CONFIGURATION
+# ============================================
+external-api:
+  base-url: http://localhost:8080
+  endpoints:
+    users: /api/users
+
+
+# ============================================
+# LOGGING
+# ============================================
+logging:
+  level:
+    root: WARN
+
+
+# ============================================
+# ACTUATOR - MONITOREO Y MÉTRICAS
+# ============================================
+management:
+  endpoint:
+    health:
+      show-details: always
+

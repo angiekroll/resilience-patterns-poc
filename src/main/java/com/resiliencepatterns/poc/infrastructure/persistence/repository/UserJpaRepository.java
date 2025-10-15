@@ -7,6 +7,7 @@ import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.domain.model.UserId;
 import com.resiliencepatterns.poc.infrastructure.persistence.entity.UserEntity;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
@@ -14,13 +15,10 @@ import java.util.Optional;
  * @version - 1.0.0
  * @since - 1.0.0
  */
-/*
 public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
 
   User save(User user);
 
   Optional<User> findById(UserId id);
 
-  User registerInExternalSystem(User user);
-
-}*/
+}

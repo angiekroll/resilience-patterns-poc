@@ -3,6 +3,7 @@
  */
 package com.resiliencepatterns.poc.domain.model;
 
+import com.resiliencepatterns.poc.domain.exceptions.InvalidEmailFormatException;
 import java.util.regex.Pattern;
 
 /**
@@ -17,8 +18,11 @@ public record UserEmail(String value) {
       Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
   public UserEmail {
-    if (value == null || !EMAIL_PATTERN.matcher(value).matches()) {
-      throw new IllegalArgumentException("Invalid email format");
+    if (value == null || value.trim().isEmpty()) {
+      throw new InvalidEmailFormatException("Email cannot be blank");
+    }
+    if (!EMAIL_PATTERN.matcher(value).matches()) {
+      throw new InvalidEmailFormatException("Invalid email format");
     }
   }
 

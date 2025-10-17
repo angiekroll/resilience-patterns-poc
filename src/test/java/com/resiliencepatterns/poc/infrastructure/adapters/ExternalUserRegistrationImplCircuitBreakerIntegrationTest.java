@@ -44,7 +44,7 @@ import org.springframework.http.*;
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
-class UserRegistrationAdapterCircuitBreakerIntegrationTest {
+class ExternalUserRegistrationImplCircuitBreakerIntegrationTest {
 
   @Container
   static GenericContainer<?> wireMock = new GenericContainer<>(DockerImageName.parse("wiremock/wiremock:3.3.1"))

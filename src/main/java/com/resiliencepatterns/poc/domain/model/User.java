@@ -43,7 +43,7 @@ public class User {
   }
 
   /**
-   * 🎯 LÓGICA DE DOMINIO - Validación de negocio
+   *  LÓGICA DE DOMINIO - Validación de negocio
    */
   public boolean isValidForProcessing() {
     return name != null && !name.trim().isEmpty() && email.isValid();

@@ -7,8 +7,8 @@ import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
 import com.resiliencepatterns.poc.application.mapper.UserMapper;
 import com.resiliencepatterns.poc.application.port.in.RegisterUserUseCasePort;
-import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
-import com.resiliencepatterns.poc.domain.exceptions.UserRegistrationException;
+import com.resiliencepatterns.poc.application.port.out.ExternalUserRegistration;
+import com.resiliencepatterns.poc.application.exceptions.UserRegistrationException;
 import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.domain.model.UserEmail;
 import com.resiliencepatterns.poc.domain.model.UserId;
@@ -24,14 +24,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class RegisterUserUseCase implements
+public class ExternalRegisterUserUseCase implements
     RegisterUserUseCasePort {
 
-  private final UserRegistrationPort userRegistrationPort;
+  private final ExternalUserRegistration externalUserRegistration;
   private final UserMapper userMapper;
 
-  public RegisterUserUseCase(UserRegistrationPort userRegistrationPort, UserMapper userMapper) {
-    this.userRegistrationPort = userRegistrationPort;
+  public ExternalRegisterUserUseCase(ExternalUserRegistration externalUserRegistration, UserMapper userMapper) {
+    this.externalUserRegistration = externalUserRegistration;
     this.userMapper = userMapper;
   }
 
@@ -44,17 +44,17 @@ public class RegisterUserUseCase implements
      // User user = createUserFromDto(registerUserCommand);    // Estrategia mapeo directo
       if (!user.isValidForProcessing()) {
         log.error("Domain error validating user: {} ", registerUserCommand.userId());
-        throw new IllegalArgumentException("User data is invalid for processing");
+        throw new UserRegistrationException("User data is invalid for processing");
       }
       user = user.register();
 
-      User registeredUser = userRegistrationPort.registerUser(user);
+      User registeredUser = externalUserRegistration.registerUser(user);
 
       return UserRegistrationResponse.success(registeredUser, "User processed successfully");
 
     } catch (IllegalArgumentException | NullPointerException e) {
       log.error("Domain validation error for user: {}", e.getMessage());
-      throw new UserRegistrationException("Invalid user data", e);
+      throw new UserRegistrationException("[Application error]: Invalid user data", e);
     }
   }
 

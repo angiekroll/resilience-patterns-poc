@@ -6,6 +6,7 @@ package com.resiliencepatterns.poc.application.port.out;
 import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.domain.model.UserId;
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 /**
  *
@@ -13,7 +14,7 @@ import java.util.Optional;
  * @version - 1.0.0
  * @since - 1.0.0
  */
-public interface UserPersistencePort {
+public interface UserRepository {
 
   User save(User user);
 

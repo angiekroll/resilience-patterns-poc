@@ -4,9 +4,12 @@
 package com.resiliencepatterns.poc.infrastructure.clients.userservice.mapper;
 
 import com.resiliencepatterns.poc.domain.model.User;
+import com.resiliencepatterns.poc.domain.model.UserEmail;
+import com.resiliencepatterns.poc.domain.model.UserId;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.dto.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 /**
  *
@@ -20,10 +23,22 @@ public interface UserDtoMapper {
 
   @Mapping(target = "id", source = "id.value")
   @Mapping(target = "email", source = "email.value")
+  @Mapping(target = "name", source = "name")
   UserDto toDto(User user);
 
-  @Mapping(target = "id", expression = "java(UserId.of(userDto.id()))")
-  @Mapping(target = "email", expression = "java(UserEmail.of(userDto.email()))")
+  @Mapping(target = "id", qualifiedByName = "mapToUserId")
+  @Mapping(target = "email", qualifiedByName = "mapToUserEmail")
+  @Mapping(target = "name", source = "name")
   User toDomain(UserDto userDto);
+
+  @Named("mapToUserId")
+  default UserId mapToUserId(Long id) {
+    return UserId.of(id);
+  }
+
+  @Named("mapToUserEmail")
+  default UserEmail mapToUserEmail(String email) {
+    return UserEmail.of(email);
+  }
 
 }

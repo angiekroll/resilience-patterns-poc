@@ -3,7 +3,7 @@
  */
 package com.resiliencepatterns.poc.infrastructure.adapters.out.http;
 
-import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
+import com.resiliencepatterns.poc.application.port.out.ExternalUserRegistration;
 import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.ExternalApiClient;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.dto.UserDto;
@@ -25,12 +25,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class UserRegistrationAdapter implements UserRegistrationPort {
+public class ExternalUserRegistrationImpl implements ExternalUserRegistration {
 
   private final ExternalApiClient externalApiClient;
   private final UserDtoMapper userDtoMapper;
 
-  public UserRegistrationAdapter(ExternalApiClient externalApiClient, UserDtoMapper userDtoMapper) {
+  public ExternalUserRegistrationImpl(ExternalApiClient externalApiClient, UserDtoMapper userDtoMapper) {
     this.externalApiClient = externalApiClient;
     this.userDtoMapper = userDtoMapper;
   }

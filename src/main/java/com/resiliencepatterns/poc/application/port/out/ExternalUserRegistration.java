@@ -11,7 +11,7 @@ import com.resiliencepatterns.poc.domain.model.User;
  * @version - 1.0.0
  * @since - 1.0.0
  */
-public interface UserRegistrationPort {
+public interface ExternalUserRegistration {
 
   User registerUser(User user);
 

@@ -14,6 +14,6 @@ import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
  */
 public interface RegisterUserUseCasePort {
 
-  UserRegistrationResponse registerUser(RegisterUserCommand messageDto);
+  UserRegistrationResponse registerUser(RegisterUserCommand command);
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025, Company. All rights reserved Date: 15/10/25
+ * Copyright 2025, Company. All rights reserved Date: 16/10/25
  */
 package com.resiliencepatterns.poc.application.mapper;
 
@@ -16,11 +16,10 @@ import org.mapstruct.Mapping;
  */
 
 @Mapper(componentModel = "spring")
-public interface RegisterUserCommandMapper {
+public interface UserMapper {
 
   @Mapping(target = "id", expression = "java(UserId.of(command.userId()))")
   @Mapping(target = "email", expression = "java(UserEmail.of(command.email()))")
-  @Mapping(target = "name", source = "name")
-  User toDomain(RegisterUserCommand command);
+  User fromCommand(RegisterUserCommand command);
 
 }

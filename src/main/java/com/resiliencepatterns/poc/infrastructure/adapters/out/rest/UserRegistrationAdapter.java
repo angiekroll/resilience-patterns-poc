@@ -7,6 +7,7 @@ import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.domain.model.User;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.ExternalApiClient;
 import com.resiliencepatterns.poc.infrastructure.clients.userservice.dto.UserDto;
+import com.resiliencepatterns.poc.infrastructure.clients.userservice.mapper.UserDtoMapper;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
@@ -27,9 +28,11 @@ import org.springframework.stereotype.Service;
 public class UserRegistrationAdapter implements UserRegistrationPort {
 
   private final ExternalApiClient externalApiClient;
+  private final UserDtoMapper userDtoMapper;
 
-  public UserRegistrationAdapter(ExternalApiClient externalApiClient) {
+  public UserRegistrationAdapter(ExternalApiClient externalApiClient, UserDtoMapper userDtoMapper) {
     this.externalApiClient = externalApiClient;
+    this.userDtoMapper = userDtoMapper;
   }
 
 
@@ -41,11 +44,11 @@ public class UserRegistrationAdapter implements UserRegistrationPort {
     log.info("[API:Execution] Starting user registration in external api, user: {}",
         user.getId().value());
 
-    UserDto userDto = UserDto.fromDomain(user);
+    UserDto userDto = userDtoMapper.toDto(user);
     UserDto result = externalApiClient.createUser(userDto);
     log.info("[API:Response] User registered successfully in external API: {}, and Mock: {}",
         user.getId().value(), result.id());
-    return result.toDomain();
+    return userDtoMapper.toDomain(result);
   }
 
 

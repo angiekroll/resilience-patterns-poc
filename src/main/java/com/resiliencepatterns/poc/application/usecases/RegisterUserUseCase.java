@@ -5,6 +5,7 @@ package com.resiliencepatterns.poc.application.usecases;
 
 import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
+import com.resiliencepatterns.poc.application.mapper.UserMapper;
 import com.resiliencepatterns.poc.application.port.in.RegisterUserUseCasePort;
 import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.domain.exceptions.UserRegistrationException;
@@ -23,12 +24,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class RegisterUserUseCase implements RegisterUserUseCasePort {
+public class RegisterUserUseCase implements
+    RegisterUserUseCasePort {
 
   private final UserRegistrationPort userRegistrationPort;
+  private final UserMapper userMapper;
 
-  public RegisterUserUseCase(UserRegistrationPort userRegistrationPort) {
+  public RegisterUserUseCase(UserRegistrationPort userRegistrationPort, UserMapper userMapper) {
     this.userRegistrationPort = userRegistrationPort;
+    this.userMapper = userMapper;
   }
 
   @Override
@@ -36,8 +40,8 @@ public class RegisterUserUseCase implements RegisterUserUseCasePort {
     log.info("[API:Validation] Validating user: {} ", registerUserCommand.userId());
 
     try {
-      User user = createUserFromDto(registerUserCommand);
-
+      User user = userMapper.fromCommand(registerUserCommand); // Estrategia con mapper
+     // User user = createUserFromDto(registerUserCommand);    // Estrategia mapeo directo
       if (!user.isValidForProcessing()) {
         log.error("Domain error validating user: {} ", registerUserCommand.userId());
         throw new IllegalArgumentException("User data is invalid for processing");

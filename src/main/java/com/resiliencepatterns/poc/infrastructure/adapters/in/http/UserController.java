@@ -1,13 +1,13 @@
 /**
  * Copyright 2025, Company. All rights reserved Date: 3/10/25
  */
-package com.resiliencepatterns.poc.infrastructure.adapters.in.rest;
+package com.resiliencepatterns.poc.infrastructure.adapters.in.http;
 
 import com.resiliencepatterns.poc.application.dto.RegisterUserCommand;
 import com.resiliencepatterns.poc.application.dto.UserRegistrationResponse;
 import com.resiliencepatterns.poc.application.port.in.RegisterUserUseCasePort;
-import com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto.ApiResponseDto;
-import com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto.UserRegistrationRequest;
+import com.resiliencepatterns.poc.infrastructure.adapters.in.http.dto.ApiResponseDto;
+import com.resiliencepatterns.poc.infrastructure.adapters.in.http.dto.UserRegistrationRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

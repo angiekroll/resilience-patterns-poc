@@ -4,7 +4,7 @@
 package com.resiliencepatterns.poc.infrastructure.exceptions;
 
 import com.resiliencepatterns.poc.domain.exceptions.UserRegistrationException;
-import com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto.ApiResponseDto;
+import com.resiliencepatterns.poc.infrastructure.adapters.in.http.dto.ApiResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

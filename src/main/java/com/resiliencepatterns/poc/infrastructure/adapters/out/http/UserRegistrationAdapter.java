@@ -1,7 +1,7 @@
 /**
  * Copyright 2025, Company. All rights reserved Date: 3/10/25
  */
-package com.resiliencepatterns.poc.infrastructure.adapters.out.rest;
+package com.resiliencepatterns.poc.infrastructure.adapters.out.http;
 
 import com.resiliencepatterns.poc.application.port.out.UserRegistrationPort;
 import com.resiliencepatterns.poc.domain.model.User;

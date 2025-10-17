@@ -1,4 +1,4 @@
-package com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto;
+package com.resiliencepatterns.poc.infrastructure.adapters.in.http.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

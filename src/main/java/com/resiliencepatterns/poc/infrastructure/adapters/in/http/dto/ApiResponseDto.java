@@ -1,4 +1,4 @@
-package com.resiliencepatterns.poc.infrastructure.adapters.in.rest.dto;
+package com.resiliencepatterns.poc.infrastructure.adapters.in.http.dto;
 
 public record ApiResponseDto<T>(
     boolean success,

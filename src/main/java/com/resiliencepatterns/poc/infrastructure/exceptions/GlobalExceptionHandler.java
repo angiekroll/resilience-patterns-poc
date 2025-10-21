@@ -9,8 +9,10 @@ import com.resiliencepatterns.poc.domain.exceptions.DomainException;
 import com.resiliencepatterns.poc.domain.exceptions.InvalidEmailFormatException;
 import com.resiliencepatterns.poc.domain.exceptions.InvalidUserIdException;
 import com.resiliencepatterns.poc.infrastructure.adapters.in.http.dto.ApiResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -143,11 +145,14 @@ public class GlobalExceptionHandler {
   // === SEGURIDAD
   // Para cualquier otra excepción
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ApiResponseDto<Void>> handleGenericException(Exception ex) {
-    log.error("Unexpected error: {}", ex.getMessage(), ex);
+  public ResponseEntity<ApiResponseDto<String>> handleGenericException(Exception ex) {
+    String correlationId = MDC.get("correlationId");
+    log.error("Unexpected error [{}]: {}", correlationId, ex.getMessage(), ex);
+
     return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ApiResponseDto.error(null, "An unexpected error occurred"));
+        .body(ApiResponseDto.error(correlationId, "An unexpected error occurred"));
   }
+
 
 }

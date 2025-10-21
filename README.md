@@ -407,3 +407,15 @@ DIP ambiguo
 Conversiones en lugar incierto
 Puede romper DIP fácilmente
 PARA EVITAR ROMPER DIP TOCARIA CONVERTIR EN INFRA
+
+
+open api:
+Swagger UI: http://localhost:8080/swagger-ui/index.html
+OpenAPI JSON:  http://localhost:8080/v3/api-docs
+OpenAPI YAML: http://localhost:8080/v3/api-docs.yaml
+Endpoint: http://localhost:8080/api/v1/users
+
+custom:
+API Documentation: http://localhost:8080/api/documentation
+OpenAPI JSON:      http://localhost:8080/api/docs
+OpenAPI YAML:      http://localhost:8080/api/docs.yaml

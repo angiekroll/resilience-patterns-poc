@@ -133,3 +133,22 @@ management:
       enabled: true
     redis:
       enabled: false
+
+
+# ============================================
+# SPRINGDOC OPENAPI CONFIGURATION - ENTERPRISE
+# ============================================
+springdoc:
+  # API Documentation URLs
+  api-docs:
+    path: /api/docs
+    enabled: true              # Para PROD en false
+
+  # Swagger UI Configuration
+  swagger-ui:
+    path: /api/documentation
+    enabled: true              # Para PROD en false
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    displayRequestDuration: true
